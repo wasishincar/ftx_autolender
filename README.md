@@ -1,9 +1,9 @@
 # ftx_autolender
-This project demonstrate how to implement an auto lender that could programmatically update offered size in a subaccount for all coins.
+This project demonstrates how to implement an auto lender that could programmatically update offered size in a subaccount for all coins.
 
 # preparation
 - In FTX website, go to Profile -> Api to "CREATE API KEY" for your account. You could get YOUR_FTX_API_KEY and YOUR_FTX_SECRET here. 
-- Create subaccount in your wallent with YOUR_SUBACCOUNT_NAME, e.g. AutoLend. 
+- Create subaccount in your wallet with YOUR_SUBACCOUNT_NAME, e.g. AutoLend. 
 
 # configuration
 Replace below variable at the begining of ftx_autolender.gs. 
