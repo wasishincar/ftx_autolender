@@ -7,10 +7,11 @@ This project demonstrate how to implement an auto lender that could programmatic
 
 # configuration
 Replace below variable at the begining of ftx_autolender.gs. 
+```javascript
 FTX_API_KEY = 'YOUR_FTX_API_KEY';
 FTX_SECRET = 'YOUR_FTX_SECRET';
 FTX_SUBACCOUNT = 'YOUR_SUBACCOUNT_NAME';
-
+```
 # setup
 1. In Google Apps Script, create a project and copy/paste all to your script. 
 2. Add a hourly trigger to execute updateMaxOffering() function. 
