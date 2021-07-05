@@ -89,7 +89,7 @@ function _post(url_api, content)
   }
 }
 
-function updateMaxOfferning()
+function updateMaxOffering()
 {
   var json_result = _get("spot_margin/lending_info");
   var data = JSON.parse(json_result);
