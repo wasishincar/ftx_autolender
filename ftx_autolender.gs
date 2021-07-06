@@ -12,7 +12,7 @@ function updateMaxOffering()
     var size = data.result[i].lendable - data.result[i].locked;
     if(coin == "USDT" && convertToBCH)
     {
-      if(size > 0)
+      if(size > MINIMUM_SIZE)
         convertTo("USDT", "BCH", size);
       else
         Logger.log("Convert size too small, do nothing");
