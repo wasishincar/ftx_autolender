@@ -1,11 +1,17 @@
-function _get(url_api, content = null) {
+function _get(url_api, content = null, params = null) {
   try {
     var url = FTX_END_POINT + url_api;
     var now = new Date();
 
     var payload = now.getTime() + "GET/api/" + url_api;
+    if (params)
+    {
+      url += "?" + encodeURI(params);
+      payload += "?" + encodeURI(params);
+    }
     if (content)
       payload += content;
+    
     var encodedPayload = encodeURI(payload);
     var encodedSecret = encodeURI(FTX_SECRET);
 
@@ -23,9 +29,8 @@ function _get(url_api, content = null) {
         "FTX-SUBACCOUNT" : FTX_SUBACCOUNT
       },
     };
-
-    var response = UrlFetchApp.fetch(FTX_END_POINT + url_api, options);
-
+    
+    var response = UrlFetchApp.fetch(url, options);
     var json = response.getContentText();
 
     return json;
