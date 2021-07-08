@@ -14,17 +14,18 @@ function updateMaxOffering()
     var size = data.result[i].lendable - data.result[i].locked;
     if(coin == "USDT" && convertToBCH)
     {
-      if(size > MINIMUM_SIZE)
+      var minimum_size = getMinimumSize();
+      if(size > minimum_size)
         convertTo("USDT", "BCH", size);
       else
-        Logger.log("Convert size too small, do nothing");
+        Logger.log("Convert size " + size + " is smaller than " + MINIMUM_SIZE + ", do nothing");
     }
     else
     {
-      if(size > 0 && data.result[i].minRate != null)
-      {    
+      if(size > 0 && data.result[i].minRate != null) 
         updateOffering(data.result[i].coin, data.result[i].lendable, data.result[i].minRate);
-      }
+      else
+        Logger.log("Size is " + size + ", do nothing");
     }
   }
 }
@@ -49,20 +50,28 @@ function updateNewLendingHistory()
     var size = data[i].size;
     var rate = data[i].rate * 24 * 365;
     var proceeds = data[i].proceeds;
+    var values = [
+      [new_time, coin, size, rate, proceeds]
+    ];
 
     sheet.insertRowAfter(1);
-    sheet.getRange("A2").setValue(new_time);
+    sheet.getRange("A2:E2").setValues(values);
+    
     sheet.getRange("A2").setHorizontalAlignment("left");
-    sheet.getRange("B2").setValue(coin);
     sheet.getRange("B2").setHorizontalAlignment("left");
-    sheet.getRange("C2").setValue(size);
     sheet.getRange("C2").setHorizontalAlignment("right");
-    sheet.getRange("D2").setValue(rate);
     sheet.getRange("D2").setHorizontalAlignment("right");
-    sheet.getRange("E2").setValue(proceeds);
+    sheet.getRange("D2").setNumberFormat("0.00%");
     sheet.getRange("E2").setHorizontalAlignment("right");
   }
-  sheet.getRange("D:D").setNumberFormat("0.00%");
+}
+
+function getMinimumSize()
+{
+  var sheet = SpreadsheetApp.getActive().getSheetByName("Configuration");
+  var sheet_minimum_size = sheet.getRange("B3").getValue();
+
+  return (MINIMUM_SIZE < sheet_minimum_size) ? MINIMUM_SIZE : sheet_minimum_size;
 }
 
 function isUpdateMaxOffering()
