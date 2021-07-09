@@ -22,6 +22,7 @@ function _get(url_api, content = null, params = null) {
 
     var options = {
       "method": "GET",
+      "muteHttpExceptions": true,
       "headers": {
         "FTX-KEY": FTX_API_KEY,
         "FTX-SIGN": signature,
@@ -61,6 +62,7 @@ function _post(url_api, content)
     var options = {
       "Auth" : true,
       "method": "POST",
+      "muteHttpExceptions": true,
       "headers": {
         "FTX-KEY": FTX_API_KEY,
         "FTX-SIGN": signature,
@@ -72,17 +74,10 @@ function _post(url_api, content)
     };
 
     var response = UrlFetchApp.fetch(FTX_END_POINT + url_api, options);
+    var json = response.getContentText();
 
-    if(response.getResponseCode() == 200)
-    {
-      var json = response.getContentText();
-
-      Logger.log("result: " + json);
-      return json;
-    }
-
-    Logger.log("result: something wrong")
-    return "Error";
+    Logger.log("result: " + json);
+    return json;
   }
   catch (e) {
     Logger.log(e);

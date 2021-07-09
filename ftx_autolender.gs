@@ -24,8 +24,6 @@ function updateMaxOffering()
     {
       if(size > 0 && data.result[i].minRate != null) 
         updateOffering(data.result[i].coin, data.result[i].lendable, data.result[i].minRate);
-      else
-        Logger.log("Size is " + size + ", do nothing");
     }
   }
 }
@@ -66,14 +64,6 @@ function updateNewLendingHistory()
   }
 }
 
-function getMinimumSize()
-{
-  var sheet = SpreadsheetApp.getActive().getSheetByName("Configuration");
-  var sheet_minimum_size = sheet.getRange("B3").getValue();
-
-  return (MINIMUM_SIZE < sheet_minimum_size) ? MINIMUM_SIZE : sheet_minimum_size;
-}
-
 function isUpdateMaxOffering()
 {
   var sheet = SpreadsheetApp.getActive().getSheetByName("Configuration");
@@ -94,57 +84,4 @@ function isConvertToBCH()
   return (bch_price < sheet.getRange("B1").getValue() || bch_price < BCH_THRESHOLD);
 }
 
-function getQuote(name)
-{
-  var json_result = _get("markets/" + name);
-  // Logger.log(json_result);
-  var quote = JSON.parse(json_result).result;
-  return quote.price;
-}
 
-function getBestOffers()
-{
-  var json_result = _get("spot_margin/lending_rates");
-  var data = JSON.parse(json_result);
-
-  var rateinfos = data.result;
-  for(i = 0; i < rateinfos.length; i++)
-  {
-    var coin = rateinfos[i].coin;
-    var previous = rateinfos[i].previous * 24 * 365;
-    var estimate = rateinfos[i].estimate * 24 * 365;
-
-    if(estimate > MINIMUM_RATE)
-      Logger.log("coin: " + coin + ", prev rate: " + previous + ", next rate: " + estimate);
-  }
-}
-
-function updateOffering(coin, size, rate)
-{
-  Logger.log("Update offers for " + coin);
-  var payload = 
-  {
-    "coin": coin,
-    "size": size,
-    "rate": rate
-  }
-  _post("spot_margin/offers", payload);
-}
-
-function convertTo(fromCurrency, toCurrency, size)
-{
-  Logger.log("Convert from " + size + " " + fromCurrency + " to " + toCurrency);
-  var payload = 
-  {
-    "fromCoin": fromCurrency,
-    "toCoin": toCurrency,
-    "size": size
-  }
-  var json_result = _post("otc/quotes", payload);
-  Logger.log(json_result);
-  var quote = JSON.parse(json_result);
-  var quoteId = quote.result.quoteId;
-  json_result = _get("otc/quotes/" + quoteId);
-  Logger.log(json_result);
-  json_result = _post("otc/quotes/"+ quoteId + "/accept");
-}
