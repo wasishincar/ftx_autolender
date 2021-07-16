@@ -84,6 +84,14 @@ function updateOffering(coin, size, rate)
 
 function convertTo(fromCurrency, toCurrency, size)
 {
+  var final_size = Math.floor(size*100000000)/100000000;
+  Logger.log("Convert from " + final_size + " " + fromCurrency + " to " + toCurrency);
+  var payload = 
+  {
+    "fromCoin": fromCurrency,
+    "toCoin": toCurrency,
+    "size": final_size
+  }
   Logger.log("Convert from " + size + " " + fromCurrency + " to " + toCurrency);
   var payload = 
   {
