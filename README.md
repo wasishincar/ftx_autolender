@@ -31,9 +31,9 @@ BUY_SIZE_FOR_BCH = 50;
 
 # google sheet configuration
 Configuration sheet:
-B2 = BCH_THRESHOLD
-B3 = MINIMUM_SIZE
-B4 = UPDATE_OFFERING
+- B2 = BCH_THRESHOLD
+- B3 = MINIMUM_SIZE
+- B4 = UPDATE_OFFERING
 
 # features
 - When BCH price drop below BCH_THRESHOLD, it will convert available balance of USDT to BCH. If you don't want this feature, simply change BCH_THRESHOLD to 0 to disable it. It will decrease BCH_THRESHOLD by 50 USDT evertime it bought the dip. You could manually adjust BCH_THRESHOLD in google sheet to adjust threshold. 
