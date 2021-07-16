@@ -71,11 +71,12 @@ function getBestOffer()
 
 function updateOffering(coin, size, rate)
 {
-  Logger.log("Update offers for " + coin);
+  var final_size = Math.floor(size*100000000)/100000000;
+  Logger.log("Update offers for " + coin + " with size " + final_size + "(" + size + ")");
   var payload = 
   {
     "coin": coin,
-    "size": size,
+    "size": final_size,
     "rate": rate
   }
   _post("spot_margin/offers", payload);
