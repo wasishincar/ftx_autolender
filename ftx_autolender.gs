@@ -12,13 +12,30 @@ function updateMaxOffering()
   {
     var coin = data.result[i].coin;
     var size = data.result[i].lendable - data.result[i].locked;
-    if(coin == "USDT" && convertToBCH)
+    if(coin == "USDT")
     {
-      var minimum_size = getMinimumSize();
-      if(size > minimum_size)
-        convertTo("USDT", "BCH", size);
+      if(convertToBCH)
+      {
+        var minimum_size = getMinimumSize();
+        if(size > minimum_size)
+        {
+          var ret = convertTo("USDT", "BCH", size);
+          if(ret.success)
+          {
+            updateConvertHistory(ret.result);
+            updateNextDipValue();
+          }
+        }
+        else
+        {
+          Logger.log("Convert size " + size + " is smaller than " + minimum_size + ", do nothing");
+          updateOffering(data.result[i].coin, (data.result[i].lendable - BUY_SIZE_FOR_BCH), data.result[i].minRate);
+        }
+      }
       else
-        Logger.log("Convert size " + size + " is smaller than " + MINIMUM_SIZE + ", do nothing");
+      {
+        updateOffering(data.result[i].coin, data.result[i].lendable, data.result[i].minRate);
+      }
     }
     else
     {
@@ -31,9 +48,13 @@ function updateMaxOffering()
 function updateNewLendingHistory()
 {
   var sheet = SpreadsheetApp.getActive().getSheetByName("History");
+  var dashboard = SpreadsheetApp.getActive().getSheetByName("Dashboard");
   var a2 = sheet.getRange("A2").getValue();
-  if(!isValidDate(a2)) return;
-
+  if(!isValidDate(a2)) 
+  {
+    sheet.deleteRow(2);
+    return;
+  }
   var start_time = (new Date(sheet.getRange("A2").getValue()).getTime() + 1000)/1000;
   var params = "start_time="+start_time;
   var json_result = _get("spot_margin/lending_history", null, params);
@@ -62,6 +83,9 @@ function updateNewLendingHistory()
     sheet.getRange("D2").setNumberFormat("0.00%");
     sheet.getRange("E2").setHorizontalAlignment("right");
   }
+
+  dashboard.getRange("C4").setValue(getQuote("BCH/USDT"));
+  dashboard.getRange("D4").setValue(getQuote("BNB/USDT"));
 }
 
 function isUpdateMaxOffering()
@@ -81,7 +105,18 @@ function isConvertToBCH()
   sheet.getRange("B2").setValue(bch_price);
   sheet.getRange("E1").setValue("Data were last updated at " + Utilities.formatDate(now, "GMT+8", "yyyy-MM-dd HH:mm:ss"));
 
-  return (bch_price < sheet.getRange("B1").getValue() || bch_price < BCH_THRESHOLD);
+  return (bch_price < sheet.getRange("B1").getValue());
+}
+
+function updateNextDipValue()
+{
+  var sheet = SpreadsheetApp.getActive().getSheetByName("Configuration");
+  var current_dip_price = sheet.getRange("B1").getValue();
+  if( current_dip_price > 50)
+    current_dip_price -= 50;
+  sheet.getRange("B1").setValue(current_dip_price);
+
+  Logger.log("Update next dip threshold to " + current_dip_price);
 }
 
 
