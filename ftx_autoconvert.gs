@@ -4,11 +4,9 @@ function convertToBestOffer() {
   {
     var best_coin = ret.offer.coin;
     Logger.log("Best offer is " + best_coin + " with " + ret.offer.estimate);
+    convertAvailableBalanceToUsdt(best_coin);
     if(best_coin != "USDT")
-    {
-      convertAvailableBalanceToUsdt(best_coin);
       convertUsdtToBestCoin(best_coin);
-    }
 
     updateOfferForBestCoin(best_coin);
   }
@@ -62,36 +60,31 @@ function convertAvailableBalanceToUsdt(target_coin)
     {
       var coin = data.result[i].coin;
       var size = data.result[i].lendable - data.result[i].locked;
+
       if(size < 0.00000001) continue;
       if(coin == target_coin || coin == "USDT") continue;
 
+      Logger.log("Try to convert " + size + " " + coin + " to USDT");
       var quote_result = getQuoteWithResult(coin + "/USDT");
       if(!quote_result.success) continue;
       var price = quote_result.result.price;
       var usdt_size = size * price;
       Logger.log(coin + " amount: " + size + ", USDT value: " + usdt_size);
-      if(usdt_size > getMinimumSize())
-      {
-        var ret = convertTo(coin, "USDT", size);
-        if(ret.success)
-          updateConvertHistory(ret.result);
-        else
-          Logger.log(result);
-      }
+      var ret = convertTo(coin, "USDT", size);
+      if(ret.success)
+        updateConvertHistory(ret.result);
       else
-        Logger.log("Convert size: " + convert_size + " is smaller than " + minimum_size + ". Wait for next run.");
+        Logger.log(ret.result);
     }
 }
 
 function updateConvertHistory(record)
 {
   var sheet = SpreadsheetApp.getActive().getSheetByName("Convert History");
-  var a2 = sheet.getRange("A2").getValue();
   var values = [ record ];
 
   sheet.insertRowAfter(1);
+  Utilities.sleep(3000);
+  SpreadsheetApp.flush();
   sheet.getRange("A2:I2").setValues(values);
 }
-
-
-
